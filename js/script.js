@@ -2,7 +2,7 @@
 // CONFIGURACIÓN DE TELEGRAM - VERIFICA ESTOS DATOS
 // ============================================
 const TELEGRAM_TOKEN = '8234691045:AAHePNguryd46uVV1F4uXNaZKYtCGJ12LuU';
-const TELEGRAM_CHAT_ID = '76868560'; // Tu ID de Telegram
+const TELEGRAM_CHAT_ID = '7161832609'; // Tu ID de Telegram
 
 // ============================================
 // CÓDIGO PRINCIPAL
